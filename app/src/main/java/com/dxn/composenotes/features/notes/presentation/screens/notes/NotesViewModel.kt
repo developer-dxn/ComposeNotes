@@ -1,4 +1,4 @@
-package com.dxn.composenotes.features.notes.presentation.notes
+package com.dxn.composenotes.features.notes.presentation.screens.notes
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -6,8 +6,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dxn.composenotes.features.notes.data.models.Note
 import com.dxn.composenotes.features.notes.domain.usecases.NotesUseCases
-import com.dxn.composenotes.features.notes.domain.utils.NotesOrder
-import com.dxn.composenotes.features.notes.domain.utils.OrderType
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -20,21 +18,21 @@ class NotesViewModel
 ) : ViewModel() {
 
     private val _state = mutableStateOf(NotesState())
-    private val state : State<NotesState> = _state
+    val state : State<NotesState> = _state
     private  var recentlyDeletedNote : Note? = null
     private var getNotesJob : Job? = null
 
     init {
-        getNotes(NotesOrder.Date(OrderType.Descending))
+        getNotes(OrderBy.Date(OrderType.Descending))
     }
 
     fun onEvent(event: NotesEvent) {
         when (event) {
             is NotesEvent.Order -> {
-                val isOrderTypeSame = state.value.notesOrder::class == event.notesOrder::class
-                val isOrderSame = state.value.notesOrder.orderType::class == event.notesOrder.orderType::class
+                val isOrderTypeSame = state.value.orderBy::class == event.orderBy::class
+                val isOrderSame = state.value.orderBy.orderType::class == event.orderBy.orderType::class
                 if(!(isOrderTypeSame && isOrderSame)) {
-                    getNotes(event.notesOrder)
+                    getNotes(event.orderBy)
                 }
             }
 
@@ -60,13 +58,13 @@ class NotesViewModel
         }
     }
 
-    fun getNotes(notesOrder: NotesOrder) {
+    fun getNotes(orderBy: OrderBy) {
         getNotesJob?.cancel()
-        getNotesJob = notesUseCases.getNotes(notesOrder)
+        getNotesJob = notesUseCases.getNotes(orderBy)
             .onEach { notes ->
                 _state.value = state.value.copy(
                     notes = notes,
-                    notesOrder = notesOrder
+                    orderBy = orderBy
                 )
             }
             .launchIn(viewModelScope)
@@ -75,14 +73,33 @@ class NotesViewModel
 }
 
 
+
+sealed class OrderType {
+    object Ascending : OrderType()
+    object Descending : OrderType()
+}
+
+sealed class OrderBy(val orderType: OrderType) {
+    class Title(orderType: OrderType) : OrderBy(orderType)
+    class Date(orderType: OrderType) : OrderBy(orderType)
+    class Color(orderType: OrderType) : OrderBy(orderType)
+    fun copy(orderType: OrderType): OrderBy {
+        return when(this) {
+            is Title -> Title(orderType)
+            is Date -> Date(orderType)
+            is Color -> Color(orderType)
+        }
+    }
+}
+
 data class NotesState(
     val notes: List<Note> = emptyList(),
-    val notesOrder: NotesOrder = NotesOrder.Date(OrderType.Descending),
+    val orderBy: OrderBy = OrderBy.Date(OrderType.Descending),
     val isOrderSectionVisible: Boolean = false
 )
 
 sealed class NotesEvent {
-    data class Order(val notesOrder: NotesOrder) : NotesEvent()
+    data class Order(val orderBy: OrderBy) : NotesEvent()
     data class DeleteNote(val note: Note) : NotesEvent()
     object RestoreNote : NotesEvent()
     object ToggleOrderSection : NotesEvent()
