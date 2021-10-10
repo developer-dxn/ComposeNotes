@@ -5,10 +5,7 @@ import androidx.room.Room
 import com.dxn.composenotes.features.notes.data.repositories.NoteRepositoryImpl
 import com.dxn.composenotes.features.notes.data.source.NoteDatabase
 import com.dxn.composenotes.features.notes.domain.repositories.NoteRepository
-import com.dxn.composenotes.features.notes.domain.usecases.AddNote
-import com.dxn.composenotes.features.notes.domain.usecases.DeleteNote
-import com.dxn.composenotes.features.notes.domain.usecases.GetNotes
-import com.dxn.composenotes.features.notes.domain.usecases.NotesUseCases
+import com.dxn.composenotes.features.notes.domain.usecases.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -37,6 +34,7 @@ object NotesModule {
     fun provideNotesUseCases(repository: NoteRepository) = NotesUseCases(
         getNotes = GetNotes(repository),
         deleteNote = DeleteNote(repository),
-        addNote = AddNote(repository)
+        addNote = AddNote(repository),
+        getNote = GetNote(repository)
     )
 }
