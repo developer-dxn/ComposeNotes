@@ -15,11 +15,11 @@ import androidx.compose.ui.unit.dp
 
 
 @Composable
-fun AppRadioButton (
+fun AppRadioButton(
     modifier: Modifier,
-    text:String,
-    selected:Boolean,
-    onClick:()->Unit
+    text: String,
+    selected: Boolean,
+    onClick: () -> Unit
 ) {
     Row(
         modifier = modifier,
@@ -29,12 +29,11 @@ fun AppRadioButton (
             selected = selected,
             onClick = onClick,
             colors = RadioButtonDefaults.colors(
-                selectedColor = MaterialTheme.colors.primary,
-                unselectedColor = MaterialTheme.colors.onBackground
+                selectedColor = MaterialTheme.colors.onPrimary,
+                unselectedColor = MaterialTheme.colors.onPrimary
             )
         )
         Spacer(modifier = Modifier.width(8.dp))
         Text(text = text, style = MaterialTheme.typography.body1)
-
     }
 }

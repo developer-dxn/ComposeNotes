@@ -1,4 +1,4 @@
-package com.dxn.composenotes.features.notes
+package com.dxn.composenotes.di
 
 import android.app.Application
 import androidx.room.Room
@@ -23,7 +23,6 @@ object NotesModule {
             NoteDatabase::class.java,
             NoteDatabase.DATABASE_NAME)
             .build()
-
 
     @Provides
     @Singleton

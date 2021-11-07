@@ -121,8 +121,7 @@ fun AddAndEditNoteScreen(
                 onValueChange = { viewModel.onEvent(AddAndEditNoteEvent.EnteredTitle(it)) },
                 onFocusChange = { viewModel.onEvent(AddAndEditNoteEvent.ChangeTitleFocus(it)) },
                 isHintVisible = titleState.isHintVisible,
-                textStyle = MaterialTheme.typography.h3
-
+                textStyle = MaterialTheme.typography.h4
             )
             TransparentTextField(
                 text = contentState.text,
